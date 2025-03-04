@@ -1,5 +1,5 @@
 <script>
-  // Your frontmatter will be available as props
+  // Props will be available through the slot
 </script>
 
 <div class="markdown-content">
@@ -10,7 +10,10 @@
   .markdown-content {
     font-family: system-ui, -apple-system, sans-serif;
     line-height: 1.6;
-    color: #333;
+    color: var(--text-color);
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
   }
 
   .markdown-content :global(h1) {
@@ -106,5 +109,25 @@
 
   .markdown-content :global(th) {
     background-color: #f5f5f5;
+  }
+
+  :global(.heading-link) {
+    text-decoration: none;
+    margin-left: -1.5em;
+    padding-right: 0.5em;
+    color: transparent;
+  }
+
+  :global(.heading-link:hover) {
+    color: var(--accent-color);
+  }
+
+  :global(h1:hover .heading-link),
+  :global(h2:hover .heading-link),
+  :global(h3:hover .heading-link),
+  :global(h4:hover .heading-link),
+  :global(h5:hover .heading-link),
+  :global(h6:hover .heading-link) {
+    color: var(--accent-color);
   }
 </style>

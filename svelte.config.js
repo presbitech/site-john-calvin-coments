@@ -13,7 +13,11 @@ const config = {
 	},
 	extensions: ['.svelte', '.md'],
 	preprocess: [
-		vitePreprocess(),
+		vitePreprocess({
+			script: {
+				runes: true
+			}
+		}),
 		mdsvex(mdsvexConfig)
 	]
 };

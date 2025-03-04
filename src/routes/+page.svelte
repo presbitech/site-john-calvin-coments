@@ -1,16 +1,14 @@
 <script lang="ts">
-  export let data;
+  const { data } = $props<{ data: any }>();
 </script>
 
-<h1>Welcome to Documentation Site</h1>
+<h1>Comentarios Bíblicos de João Calvino</h1>
 
 <div class="content">
-  <h2>Available Documents</h2>
-  
   <div class="file-grid">
     {#each data.files as file}
       <a href={file.path} class="file-card">
-        <div class="icon">{file.isDirectory ? '📁' : '📄'}</div>
+        <div class="icon">{#if file.isDirectory} 📁 {:else} 📄 {/if}</div>
         <div class="name">{file.name}</div>
       </a>
     {/each}
