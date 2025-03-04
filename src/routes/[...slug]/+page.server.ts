@@ -4,11 +4,31 @@ import path from 'path';
 import { marked } from 'marked';
 import type { PageServerLoad } from './$types';
 
-// Configure marked options
+// Helper function to create slug-friendly IDs
+function slugify(text: string): string {
+    return text
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
+        .replace(/[^\w\s-]/g, '') // Remove special characters
+        .trim()
+        .replace(/\s+/g, '-'); // Replace spaces with hyphens
+}
+
+// Configure marked options with custom heading renderer
+const renderer = new marked.Renderer();
+
+// Override heading renderer to add IDs
+renderer.heading = function(text, level) {
+    const id = slugify(text);
+    return `<h${level} id="${id}">${text}</h${level}>`;
+};
+
 marked.setOptions({
     gfm: true, // GitHub Flavored Markdown
     breaks: true, // Convert line breaks to <br>
     headerIds: true, // Generate IDs for headings
+    renderer: renderer,
     mangle: false, // Don't escape HTML
     pedantic: false, // Don't be too strict
     sanitize: false // Don't sanitize HTML

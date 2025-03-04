@@ -4,16 +4,20 @@
   import '../app.css';
   
   const { data } = $props<{ data: any }>();
+  let contentRef = $state<HTMLElement | null>(null);
   let toc = $state([]);
 
+  // Update TOC when content changes
   $effect(() => {
-    if (typeof document !== 'undefined') {
-      const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
-      toc = Array.from(headings).map(heading => ({
-        id: heading.id,
-        text: heading.textContent || '',
-        level: parseInt(heading.tagName[1])
-      }));
+    if (contentRef) {
+      setTimeout(() => {
+        const headings = contentRef.querySelectorAll('h1, h2, h3, h4, h5, h6');
+        toc = Array.from(headings).map(heading => ({
+          id: heading.id,
+          text: heading.textContent || '',
+          level: parseInt(heading.tagName[1])
+        }));
+      }, 100); // Small delay to ensure content is fully rendered
     }
   });
 </script>
@@ -37,21 +41,25 @@
       {/each}
     </nav>
 
-    <main class="content">
+    <main class="content" bind:this={contentRef}>
       <slot />
     </main>
 
     <nav class="right-sidebar">
       <h2>Conteúdo</h2>
-      {#each toc as item}
-        <a
-          href="#{item.id}"
-          class="toc-item"
-          style="padding-left: {(item.level - 1) * 1}rem"
-        >
-          {item.text}
-        </a>
-      {/each}
+      {#if toc.length > 0}
+        {#each toc as item}
+          <a
+            href="#{item.id}"
+            class="toc-item"
+            style="padding-left: {(item.level - 1) * 1}rem"
+          >
+            {item.text}
+          </a>
+        {/each}
+      {:else}
+        <p class="no-headings">Nenhum cabeçalho encontrado</p>
+      {/if}
     </nav>
   </div>
 </div>
@@ -124,5 +132,10 @@
 
   .toc-item:hover {
     color: var(--accent-color);
+  }
+
+  .no-headings {
+    font-style: italic;
+    color: #888;
   }
 </style>
