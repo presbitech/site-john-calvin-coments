@@ -27,11 +27,8 @@ renderer.heading = function(text, level) {
 marked.setOptions({
     gfm: true, // GitHub Flavored Markdown
     breaks: true, // Convert line breaks to <br>
-    headerIds: true, // Generate IDs for headings
     renderer: renderer,
-    mangle: false, // Don't escape HTML
-    pedantic: false, // Don't be too strict
-    sanitize: false // Don't sanitize HTML
+    pedantic: false // Don't be too strict
 });
 
 export const load = (async ({ params }) => {
