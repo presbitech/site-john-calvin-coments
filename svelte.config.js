@@ -16,7 +16,16 @@ const config = {
 			strict: true
 		}),
 		prerender: {
-			handleMissingId: 'warn'
+			handleMissingId: 'warn',
+			handleHttpError: ({ path, referrer, message }) => {
+				// Ignore 404s from content pages
+				if (path.endsWith('.md')) {
+					return;
+				}
+				
+				// Otherwise, fail the build
+				throw new Error(message);
+			}
 		},
 		paths: {
 			// Update this to match your GitHub repository name
