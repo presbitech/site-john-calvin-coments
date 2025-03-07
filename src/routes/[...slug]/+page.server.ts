@@ -33,14 +33,28 @@ marked.setOptions({
 
 export const load = (async ({ params }) => {
     const { slug } = params;
+    // First try in the regular content directory
     const contentPath = path.join(process.cwd(), 'content', `${slug}.md`);
-
+    
+    // If we're in a build environment, also check for content in the build directory
+    const buildContentPath = path.join(process.cwd(), 'build', 'content', `${slug}.md`);
+    
     try {
-        if (!fs.existsSync(contentPath)) {
+        let rawContent;
+        
+        // First check if file exists in the regular content path
+        if (fs.existsSync(contentPath)) {
+            rawContent = fs.readFileSync(contentPath, 'utf-8');
+        } 
+        // If not, check if it exists in the build content path
+        else if (fs.existsSync(buildContentPath)) {
+            rawContent = fs.readFileSync(buildContentPath, 'utf-8');
+        }
+        // If neither exist, throw a 404
+        else {
             throw error(404, `Could not find ${slug}`);
         }
 
-        const rawContent = fs.readFileSync(contentPath, 'utf-8');
         const content = await marked(rawContent); // Transform Markdown to HTML
 
         return {

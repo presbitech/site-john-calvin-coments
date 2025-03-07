@@ -78,14 +78,26 @@ function naturalSort(a: string, b: string): number {
 }
 
 export const load = (async () => {
+    // Try to find content in both places
     const contentDir = path.join(process.cwd(), 'content');
+    const buildContentDir = path.join(process.cwd(), 'build', 'content');
     
     // Create content directory if it doesn't exist
     if (!fs.existsSync(contentDir)) {
         fs.mkdirSync(contentDir, { recursive: true });
     }
 
-    const files = getFiles(contentDir, contentDir);
+    // First check the main content directory
+    let files = [];
+    if (fs.existsSync(contentDir)) {
+        files = getFiles(contentDir, contentDir);
+    }
+    
+    // If we're in a build environment and have no files yet, try the build content directory
+    if (files.length === 0 && fs.existsSync(buildContentDir)) {
+        files = getFiles(buildContentDir, buildContentDir);
+    }
+    
     return {
         files
     };
