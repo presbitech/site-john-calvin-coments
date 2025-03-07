@@ -13,10 +13,13 @@ function getFiles(dir: string, baseDir: string): any[] {
             const relativePath = path.relative(baseDir, fullPath);
 
             if (stat.isDirectory()) {
+                // Recursively get files and folders inside this directory
+                const children = getFiles(fullPath, baseDir);
                 result.push({
                     name: item,
                     path: '/' + relativePath,
-                    isDirectory: true
+                    isDirectory: true,
+                    children: children
                 });
             } else if (item.endsWith('.md')) {
                 result.push({

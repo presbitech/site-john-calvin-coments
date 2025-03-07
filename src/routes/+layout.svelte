@@ -6,6 +6,12 @@
   const { data } = $props<{ data: any }>();
   let contentRef = $state<HTMLElement | null>(null);
   let toc = $state([]);
+  let expandedFolders = $state<Record<string, boolean>>({});
+
+  // Toggle folder expansion
+  function toggleFolder(path: string) {
+    expandedFolders[path] = !expandedFolders[path];
+  }
 
   // Update TOC when content changes
   $effect(() => {
@@ -30,12 +36,84 @@
   <div class="main-container">
     <nav class="left-sidebar">
       <h2>Comentários</h2>
-      {#each data.files as file}
-        <div class="file-item" style="padding-left: {file.isDirectory ? '0' : '1rem'}">
-          {#if file.isDirectory}
-            📁 {file.name}
+      {#each data.files as item}
+        <div class="file-tree">
+          {#if item.isDirectory}
+            <div 
+              class="file-item folder-item" 
+              on:click={() => toggleFolder(item.path)}
+              on:keydown={(e) => e.key === 'Enter' && toggleFolder(item.path)}
+              tabindex="0"
+            >
+              <span class="material-symbols-outlined">{expandedFolders[item.path] ? 'folder_open' : 'folder'}</span>
+              <span class="folder-name">{item.name}</span>
+            </div>
+            {#if expandedFolders[item.path] && item.children && item.children.length > 0}
+              {#each item.children as childItem}
+                <div class="file-tree" style="padding-left: 1rem">
+                  {#if childItem.isDirectory}
+                    <div 
+                      class="file-item folder-item" 
+                      on:click={() => toggleFolder(childItem.path)}
+                      on:keydown={(e) => e.key === 'Enter' && toggleFolder(childItem.path)}
+                      tabindex="0"
+                    >
+                      <span class="material-symbols-outlined">{expandedFolders[childItem.path] ? 'folder_open' : 'folder'}</span>
+                      <span class="folder-name">{childItem.name}</span>
+                    </div>
+                    {#if expandedFolders[childItem.path] && childItem.children && childItem.children.length > 0}
+                      {#each childItem.children as grandChildItem}
+                        <div class="file-tree" style="padding-left: 2rem">
+                          {#if grandChildItem.isDirectory}
+                            <div 
+                              class="file-item folder-item" 
+                              on:click={() => toggleFolder(grandChildItem.path)}
+                              on:keydown={(e) => e.key === 'Enter' && toggleFolder(grandChildItem.path)}
+                              tabindex="0"
+                            >
+                              <span class="material-symbols-outlined">{expandedFolders[grandChildItem.path] ? 'folder_open' : 'folder'}</span>
+                              <span class="folder-name">{grandChildItem.name}</span>
+                            </div>
+                            {#if expandedFolders[grandChildItem.path] && grandChildItem.children && grandChildItem.children.length > 0}
+                              <!-- Additional levels could be added here but for simplicity we'll stop at 3 levels -->
+                              {#each grandChildItem.children as greatGrandChildItem}
+                                <div class="file-item" style="padding-left: 3rem">
+                                  {#if greatGrandChildItem.isDirectory}
+                                    <!-- More levels could go here -->
+                                  {:else}
+                                    <a href={greatGrandChildItem.path} class="file-link">
+                                      <span class="material-symbols-outlined">docs</span>
+                                      <span class="file-name">{greatGrandChildItem.name}</span>
+                                    </a>
+                                  {/if}
+                                </div>
+                              {/each}
+                            {/if}
+                          {:else}
+                            <a href={grandChildItem.path} class="file-link">
+                              <span class="material-symbols-outlined">docs</span>
+                              <span class="file-name">{grandChildItem.name}</span>
+                            </a>
+                          {/if}
+                        </div>
+                      {/each}
+                    {/if}
+                  {:else}
+                    <a href={childItem.path} class="file-link">
+                      <span class="material-symbols-outlined">docs</span>
+                      <span class="file-name">{childItem.name}</span>
+                    </a>
+                  {/if}
+                </div>
+              {/each}
+            {/if}
           {:else}
-            📄 <a href={file.path}>{file.name}</a>
+            <div class="file-item">
+              <a href={item.path} class="file-link">
+                <span class="material-symbols-outlined">docs</span>
+                <span class="file-name">{item.name}</span>
+              </a>
+            </div>
           {/if}
         </div>
       {/each}
@@ -109,16 +187,38 @@
     margin: 0 auto;
   }
 
-  .file-item {
-    margin: 0.5rem 0;
+  .file-tree {
+    margin: 0.25rem 0;
   }
 
-  .file-item a {
+  .file-item {
+    margin: 0.25rem 0;
+  }
+
+  .folder-item {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .folder-item:hover {
+    color: var(--accent-color);
+  }
+
+  .folder-icon,
+  .file-icon {
+    margin-right: 0.5rem;
+  }
+
+  .file-link {
+    display: flex;
+    align-items: center;
     color: var(--text-color);
     text-decoration: none;
   }
 
-  .file-item a:hover {
+  .file-link:hover {
     color: var(--accent-color);
   }
 
