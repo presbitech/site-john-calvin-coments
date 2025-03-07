@@ -8,7 +8,11 @@
   <div class="file-grid">
     {#each data.files as file}
       <a href={file.path} class="file-card">
-        <div class="icon">{#if file.isDirectory} 📁 {:else} 📄 {/if}</div>
+        <div class="icon">{#if file.isDirectory} 
+          <span class="material-symbols-outlined">folder</span> 
+          {:else} 
+          <span class="material-symbols-outlined">description</span>
+          {/if}</div>
         <div class="name">{file.name}</div>
       </a>
     {/each}

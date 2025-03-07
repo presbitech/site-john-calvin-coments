@@ -3,27 +3,122 @@
   import { onMount } from 'svelte';
   import '../app.css';
   
+  // Extend Window interface to include tocObserver
+  declare global {
+    interface Window {
+      tocObserver?: IntersectionObserver;
+    }
+  }
+  
   const { data } = $props<{ data: any }>();
   let contentRef = $state<HTMLElement | null>(null);
   let toc = $state([]);
   let expandedFolders = $state<Record<string, boolean>>({});
+  // Track current path for TOC updates
+  let currentPath = $state($page.url.pathname);
+  // Track active heading
+  let activeHeadingId = $state('');
 
   // Toggle folder expansion
   function toggleFolder(path: string) {
     expandedFolders[path] = !expandedFolders[path];
   }
 
-  // Update TOC when content changes
+  // Update TOC when content changes or URL changes
   $effect(() => {
+    // Reset TOC when navigating to a different page
+    if (currentPath !== $page.url.pathname) {
+      toc = [];
+      currentPath = $page.url.pathname;
+      activeHeadingId = '';
+    }
+
     if (contentRef) {
-      setTimeout(() => {
+      // Use a debounced update to ensure content is fully loaded
+      const updateToc = () => {
         const headings = contentRef.querySelectorAll('h1, h2, h3, h4, h5, h6');
-        toc = Array.from(headings).map(heading => ({
-          id: heading.id,
-          text: heading.textContent || '',
-          level: parseInt(heading.tagName[1])
-        }));
-      }, 100); // Small delay to ensure content is fully rendered
+        if (headings.length > 0) {
+          toc = Array.from(headings).map(heading => ({
+            id: heading.id,
+            text: heading.textContent || '',
+            level: parseInt(heading.tagName[1])
+          }));
+          
+          // Set up intersection observer for headings
+          setupIntersectionObserver();
+        }
+      };
+
+      // Initial update
+      updateToc();
+      
+      // Set up mutation observer to watch for DOM changes in content
+      const observer = new MutationObserver(updateToc);
+      observer.observe(contentRef, { 
+        childList: true, 
+        subtree: true, 
+        characterData: true 
+      });
+
+      // Cleanup function
+      return () => observer.disconnect();
+    }
+  });
+
+  // Set up intersection observer to track which heading is currently visible
+  function setupIntersectionObserver() {
+    if (!contentRef) return;
+    
+    const headingElements = contentRef.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    if (headingElements.length === 0) return;
+    
+    // Disconnect any existing observer
+    if (window.tocObserver) {
+      window.tocObserver.disconnect();
+    }
+    
+    // Create a new intersection observer
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Find the first heading that is intersecting
+        const visibleHeadings = entries.filter(entry => entry.isIntersecting);
+        
+        if (visibleHeadings.length > 0) {
+          // Use the first visible heading as the active one
+          activeHeadingId = visibleHeadings[0].target.id;
+        }
+      },
+      {
+        rootMargin: '-80px 0px -80% 0px',
+        threshold: 0
+      }
+    );
+    
+    // Observe all headings
+    headingElements.forEach(heading => {
+      observer.observe(heading);
+    });
+    
+    // Store the observer reference
+    window.tocObserver = observer;
+    
+    return () => {
+      if (window.tocObserver) {
+        window.tocObserver.disconnect();
+      }
+    };
+  }
+
+  // Setup scroll event for updating active heading
+  onMount(() => {
+    if (typeof window !== 'undefined') {
+      setupIntersectionObserver();
+      
+      return () => {
+        if (window.tocObserver) {
+          window.tocObserver.disconnect();
+        }
+      };
     }
   });
 </script>
@@ -126,15 +221,19 @@
     <nav class="right-sidebar">
       <h2>Conteúdo</h2>
       {#if toc.length > 0}
-        {#each toc as item}
-          <a
-            href="#{item.id}"
-            class="toc-item"
-            style="padding-left: {(item.level - 1) * 1}rem"
-          >
-            {item.text}
-          </a>
-        {/each}
+        <div class="toc-container">
+          {#each toc as item}
+            <a
+              href="#{item.id}"
+              class={`toc-item ${item.id === activeHeadingId ? 'active' : ''}`}
+              style="padding-left: {(item.level - 1) * 1}rem"
+              data-level={item.level}
+              data-id={item.id}
+            >
+              {item.text}
+            </a>
+          {/each}
+        </div>
       {:else}
         <p class="no-headings">Nenhum cabeçalho encontrado</p>
       {/if}
@@ -181,6 +280,10 @@
     overflow-y: auto;
   }
 
+  .right-sidebar {
+    border-left: 1px solid var(--border-color);
+  }
+
   .content {
     padding: 2rem;
     max-width: 800px;
@@ -222,20 +325,38 @@
     color: var(--accent-color);
   }
 
+  .toc-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
   .toc-item {
     display: block;
     text-decoration: none;
     color: var(--text-color);
-    margin: 0.5rem 0;
-    transition: color 0.2s ease;
+    padding: 0.25rem 0;
+    font-size: 0.9rem;
+    border-left: 2px solid transparent;
+    transition: all 0.2s ease;
   }
 
   .toc-item:hover {
-    color: var(--accent-color);
+    color: var(--primary-color);
+    border-left-color: var(--primary-color);
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  .toc-item.active {
+    color: var(--primary-color);
+    border-left-color: var(--primary-color);
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.05);
   }
 
   .no-headings {
     font-style: italic;
-    color: #888;
+    color: var(--text-muted);
+    font-size: 0.9rem;
   }
 </style>
