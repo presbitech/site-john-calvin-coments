@@ -11,7 +11,6 @@
     font-family: system-ui, -apple-system, sans-serif;
     line-height: 1.6;
     color: var(--text-color);
-    padding: 2rem;
     max-width: 800px;
     margin: 0 auto;
   }

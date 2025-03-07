@@ -11,6 +11,5 @@
     width: 100%;
     max-width: 100%;
     overflow-x: auto;
-    padding: 2rem;
   }
 </style>

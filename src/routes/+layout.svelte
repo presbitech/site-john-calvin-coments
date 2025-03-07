@@ -29,6 +29,11 @@
   function toggleLeftSidebar() {
     leftSidebarVisible = !leftSidebarVisible;
   }
+  
+  // Close sidebar when clicking outside of it
+  function handleOverlayClick() {
+    leftSidebarVisible = false;
+  }
 
   // Handle click on TOC item
   function handleTocItemClick(id: string, event: MouseEvent) {
@@ -173,7 +178,7 @@
     <button 
       class="mobile-toggle" 
       aria-label="Toggle sidebar"
-      onclick={toggleLeftSidebar}
+      on:click={() => toggleLeftSidebar()}
     >
       <span class="material-symbols-outlined">menu</span>
     </button>
@@ -181,24 +186,22 @@
   </header>
 
   <div class="main-container">
+    <!-- Overlay for closing the sidebar when clicking outside -->
+    {#if leftSidebarVisible}
+      <div class="sidebar-overlay" on:click={() => handleOverlayClick()}></div>
+    {/if}
+    
     <nav class="left-sidebar" class:visible={leftSidebarVisible}>
       <div class="sidebar-header">
         <h2>Comentários</h2>
-        <button 
-          class="close-sidebar" 
-          aria-label="Close sidebar"
-          onclick={toggleLeftSidebar}
-        >
-          <span class="material-symbols-outlined">close</span>
-        </button>
       </div>
       {#each data.files as item}
         <div class="file-tree">
           {#if item.isDirectory}
             <div 
               class="file-item folder-item" 
-              onclick={() => toggleFolder(item.path)}
-              onkeydown={(e) => e.key === 'Enter' && toggleFolder(item.path)}
+              on:click={() => toggleFolder(item.path)}
+              on:keydown={(e) => e.key === 'Enter' && toggleFolder(item.path)}
               tabindex="0"
               role="button"
               aria-expanded={!!expandedFolders[item.path]}
@@ -212,8 +215,8 @@
                   {#if childItem.isDirectory}
                     <div 
                       class="file-item folder-item" 
-                      onclick={() => toggleFolder(childItem.path)}
-                      onkeydown={(e) => e.key === 'Enter' && toggleFolder(childItem.path)}
+                      on:click={() => toggleFolder(childItem.path)}
+                      on:keydown={(e) => e.key === 'Enter' && toggleFolder(childItem.path)}
                       tabindex="0"
                       role="button"
                       aria-expanded={!!expandedFolders[childItem.path]}
@@ -270,7 +273,7 @@
               style="padding-left: {(item.level - 1) * 1}rem"
               data-level={item.level}
               data-id={item.id}
-              onclick={(e) => handleTocItemClick(item.id, e)}
+              on:click={(e) => handleTocItemClick(item.id, e)}
             >
               {item.text}
             </a>
@@ -323,6 +326,18 @@
     grid-template-columns: var(--sidebar-width) 1fr var(--sidebar-width);
     flex: 1;
     gap: 2rem;
+    position: relative;
+  }
+
+  .sidebar-overlay {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 50;
+    display: none;
   }
 
   .left-sidebar,
@@ -444,6 +459,10 @@
       justify-content: center;
     }
 
+    .sidebar-overlay {
+      display: block;
+    }
+
     .left-sidebar {
       position: fixed;
       left: -100%;
@@ -458,10 +477,6 @@
 
     .left-sidebar.visible {
       left: 0;
-    }
-
-    .close-sidebar {
-      display: block;
     }
 
     .right-sidebar {
