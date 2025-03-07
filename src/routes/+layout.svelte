@@ -24,6 +24,23 @@
     expandedFolders[path] = !expandedFolders[path];
   }
 
+  // Handle click on TOC item
+  function handleTocItemClick(id: string, event: MouseEvent) {
+    // Update active heading ID
+    activeHeadingId = id;
+    
+    // Optional: smooth scroll to the heading
+    if (event) {
+      event.preventDefault();
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+      // Update URL hash without full page reload
+      history.pushState(null, '', `#${id}`);
+    }
+  }
+
   // Update TOC when content changes or URL changes
   $effect(() => {
     // Reset TOC when navigating to a different page
@@ -114,10 +131,35 @@
     if (typeof window !== 'undefined') {
       setupIntersectionObserver();
       
+      // Check if there's a hash in the URL when the page loads
+      if (window.location.hash) {
+        const hash = window.location.hash.substring(1); // Remove the leading '#'
+        activeHeadingId = hash;
+        
+        // Scroll to the element after a small delay to ensure DOM is fully loaded
+        setTimeout(() => {
+          const element = document.getElementById(hash);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100);
+      }
+      
+      // Listen for hash changes in the URL
+      const handleHashChange = () => {
+        if (window.location.hash) {
+          const hash = window.location.hash.substring(1);
+          activeHeadingId = hash;
+        }
+      };
+      
+      window.addEventListener('hashchange', handleHashChange);
+      
       return () => {
         if (window.tocObserver) {
           window.tocObserver.disconnect();
         }
+        window.removeEventListener('hashchange', handleHashChange);
       };
     }
   });
@@ -229,6 +271,7 @@
               style="padding-left: {(item.level - 1) * 1}rem"
               data-level={item.level}
               data-id={item.id}
+              on:click={(e) => handleTocItemClick(item.id, e)}
             >
               {item.text}
             </a>
