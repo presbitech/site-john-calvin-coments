@@ -1,6 +1,5 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { onMount } from 'svelte';
   import '../app.css';
   
   // Extend Window interface to include tocObserver
@@ -126,11 +125,8 @@
     };
   }
 
-  // Setup scroll event for updating active heading
-  onMount(() => {
+  $effect(() => {
     if (typeof window !== 'undefined') {
-      setupIntersectionObserver();
-      
       // Check if there's a hash in the URL when the page loads
       if (window.location.hash) {
         const hash = window.location.hash.substring(1); // Remove the leading '#'
@@ -156,10 +152,10 @@
       window.addEventListener('hashchange', handleHashChange);
       
       return () => {
+        window.removeEventListener('hashchange', handleHashChange);
         if (window.tocObserver) {
           window.tocObserver.disconnect();
         }
-        window.removeEventListener('hashchange', handleHashChange);
       };
     }
   });
