@@ -23,7 +23,7 @@ function getFiles(dir: string, baseDir: string): any[] {
                 });
             } else if (item.endsWith('.md')) {
                 result.push({
-                    name: item,
+                    name: item.replace(/\.md$/, ''), // Remove .md extension from the name
                     path: '/' + relativePath.replace(/\.md$/, ''),
                     isDirectory: false
                 });
