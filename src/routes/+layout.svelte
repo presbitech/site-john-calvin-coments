@@ -177,6 +177,8 @@
               onclick={() => toggleFolder(item.path)}
               onkeydown={(e) => e.key === 'Enter' && toggleFolder(item.path)}
               tabindex="0"
+              role="button"
+              aria-expanded={!!expandedFolders[item.path]}
             >
               <span class="material-symbols-outlined">{expandedFolders[item.path] ? 'folder_open' : 'folder'}</span>
               <span class="folder-name">{item.name}</span>
@@ -190,6 +192,8 @@
                       onclick={() => toggleFolder(childItem.path)}
                       onkeydown={(e) => e.key === 'Enter' && toggleFolder(childItem.path)}
                       tabindex="0"
+                      role="button"
+                      aria-expanded={!!expandedFolders[childItem.path]}
                     >
                       <span class="material-symbols-outlined">{expandedFolders[childItem.path] ? 'folder_open' : 'folder'}</span>
                       <span class="folder-name">{childItem.name}</span>
@@ -203,6 +207,8 @@
                               onclick={() => toggleFolder(grandChildItem.path)}
                               onkeydown={(e) => e.key === 'Enter' && toggleFolder(grandChildItem.path)}
                               tabindex="0"
+                              role="button"
+                              aria-expanded={!!expandedFolders[grandChildItem.path]}
                             >
                               <span class="material-symbols-outlined">{expandedFolders[grandChildItem.path] ? 'folder_open' : 'folder'}</span>
                               <span class="folder-name">{grandChildItem.name}</span>
