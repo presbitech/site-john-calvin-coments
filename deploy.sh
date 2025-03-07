@@ -17,7 +17,7 @@ git add .
 git commit -m "Deploy to GitHub Pages"
 
 # Force push to the gh-pages branch
-git push -f git@github.com:yourusername/comentarios-site-svelte.git main:gh-pages
+git push origin main
 
 # Return to the project root
 cd ..
