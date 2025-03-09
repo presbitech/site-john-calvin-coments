@@ -29,7 +29,7 @@ const config = {
 		},
 		paths: {
 			// Update this to match your GitHub repository name
-			base: process.env.NODE_ENV === 'production' ? '/site-john-calvin-coments' : ''
+			base: '' //process.env.NODE_ENV === 'production' ? '/site-john-calvin-coments' : ''
 		}
 	},
 	extensions: ['.svelte', '.md'],
