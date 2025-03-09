@@ -178,7 +178,7 @@
     <button 
       class="mobile-toggle" 
       aria-label="Toggle sidebar"
-      on:click={() => toggleLeftSidebar()}
+      onclick={() => toggleLeftSidebar()}
     >
       <span class="material-symbols-outlined">menu</span>
     </button>
@@ -188,7 +188,7 @@
   <div class="main-container">
     <!-- Overlay for closing the sidebar when clicking outside -->
     {#if leftSidebarVisible}
-      <div class="sidebar-overlay" on:click={() => handleOverlayClick()}></div>
+      <div class="sidebar-overlay" onclick={() => handleOverlayClick()}></div>
     {/if}
     
     <nav class="left-sidebar" class:visible={leftSidebarVisible}>
@@ -200,8 +200,8 @@
           {#if item.isDirectory}
             <div 
               class="file-item folder-item" 
-              on:click={() => toggleFolder(item.path)}
-              on:keydown={(e) => e.key === 'Enter' && toggleFolder(item.path)}
+              onclick={() => toggleFolder(item.path)}
+              onkeydown={(e) => e.key === 'Enter' && toggleFolder(item.path)}
               tabindex="0"
               role="button"
               aria-expanded={!!expandedFolders[item.path]}
@@ -215,8 +215,8 @@
                   {#if childItem.isDirectory}
                     <div 
                       class="file-item folder-item" 
-                      on:click={() => toggleFolder(childItem.path)}
-                      on:keydown={(e) => e.key === 'Enter' && toggleFolder(childItem.path)}
+                      onclick={() => toggleFolder(childItem.path)}
+                      onkeydown={(e) => e.key === 'Enter' && toggleFolder(childItem.path)}
                       tabindex="0"
                       role="button"
                       aria-expanded={!!expandedFolders[childItem.path]}
@@ -273,7 +273,7 @@
               style="padding-left: {(item.level - 1) * 1}rem"
               data-level={item.level}
               data-id={item.id}
-              on:click={(e) => handleTocItemClick(item.id, e)}
+              onclick={(e) => handleTocItemClick(item.id, e)}
             >
               {item.text}
             </a>
