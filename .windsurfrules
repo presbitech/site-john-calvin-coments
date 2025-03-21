@@ -1,0 +1,14 @@
+# Technical rules
+
+- Use Svelte 5 for the frontend
+- Donot use Svelte verions lower than 5 if it is not essencial
+- Use SvelteKit for the backend
+- When Coding create a branch for the modifications, if there is some modification pending, commit them as WIP and go on
+- After and succesfull modification, make a Commit to Git explaining what you did on the message.
+- When push modifications to repository, Always do in a specific branch (like feature-x) with the name of alteration.
+- When pushing modifications, create a Pull request.
+
+# Validation rules
+- Use Linting to validate the code
+- Use tests to validate the modifications. Use a browser simulator to operate and verify if the results are as expected
+- Build the site to verify if it is running as expected, does not use the dev server.

@@ -2,14 +2,15 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Content Accessibility Tests', () => {
   test('should access the build and verify homepage loads', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/getting-started');
     
-    // Check if the page loaded successfully
-    expect(await page.title()).toBeTruthy();
+    // Verify the "Getting Started" heading is present
+    const heading = page.getByRole('heading', { name: 'Getting Started', level: 1 });
+    await expect(heading).toBeVisible();
     
-    // Verify some basic content is present
-    const mainContent = await page.getByRole('main');
-    await expect(mainContent).toBeVisible();
+    // Also verify it has the correct ID
+    const headingWithId = page.locator('h1#getting-started');
+    await expect(headingWithId).toBeVisible();
   });
 
   test('should access and read Genesis 1:1', async ({ page }) => {
