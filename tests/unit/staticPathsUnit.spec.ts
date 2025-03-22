@@ -1,5 +1,5 @@
 import { describe, expect, test, vi, beforeEach } from 'vitest';
-import { generateStaticPaths } from '../src/lib/utils/staticPaths';
+import { generateStaticPaths } from '../../src/lib/utils/staticPaths';
 import * as fs from 'fs';
 import * as path from 'path';
 
