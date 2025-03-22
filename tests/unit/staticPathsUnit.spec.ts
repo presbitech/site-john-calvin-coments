@@ -35,12 +35,13 @@ describe('Static Paths Generator Unit Tests', () => {
     vi.mocked(fs.existsSync).mockReturnValue(true);
     
     // Mock readdirSync for base content directory to return some markdown files
-    vi.mocked(fs.readdirSync).mockImplementation((dir: any, options?: any): any => {
+    vi.mocked(fs.readdirSync).mockImplementation((path: fs.PathLike, options?: { encoding?: BufferEncoding | null; withFileTypes?: boolean } | BufferEncoding | null | undefined): any => {
+      const dir = path.toString();
       if (dir === '/test/content' && !options) {
         return ['getting-started.md', 'about.md', 'contact.md'];
       }
       
-      if (dir === '/test/content' && options?.withFileTypes) {
+      if (dir === '/test/content' && typeof options === 'object' && options?.withFileTypes) {
         return [];
       }
       
@@ -73,18 +74,21 @@ describe('Static Paths Generator Unit Tests', () => {
       isCharacterDevice: () => false,
       isFIFO: () => false,
       isSocket: () => false,
-      isSymbolicLink: () => false
+      isSymbolicLink: () => false,
+      parentPath: '/test/content',
+      path: `/test/content/${name}`
     });
     
     // Mock readdirSync to handle different calls
-    vi.mocked(fs.readdirSync).mockImplementation((dir: string, options?: any): any => {
+    vi.mocked(fs.readdirSync).mockImplementation((path: fs.PathLike, options?: { encoding?: BufferEncoding | null; withFileTypes?: boolean } | BufferEncoding | null | undefined): any => {
+      const dir = path.toString();
       // Root content directory with no options (simple file list)
       if (dir === '/test/content' && !options) {
         return ['getting-started.md', 'genesis'];
       }
       
       // Root content directory with options (directory entries)
-      if (dir === '/test/content' && options?.withFileTypes) {
+      if (dir === '/test/content' && typeof options === 'object' && options?.withFileTypes) {
         return [
           mockDirEnt('getting-started.md', false),
           mockDirEnt('genesis', true)

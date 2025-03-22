@@ -34,6 +34,8 @@ jobs:
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
       - name: Build
+        env:
+          NODE_ENV: production
         run: |
           npm run build
           touch build/.nojekyll

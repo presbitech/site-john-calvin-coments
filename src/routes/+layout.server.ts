@@ -1,6 +1,7 @@
 import type { LayoutServerLoad } from './$types';
 import fs from 'fs';
 import path from 'path';
+import { base } from '$app/paths';
 
 function getFiles(dir: string, baseDir: string): any[] {
     try {
@@ -17,14 +18,14 @@ function getFiles(dir: string, baseDir: string): any[] {
                 const children = getFiles(fullPath, baseDir);
                 result.push({
                     name: item,
-                    path: '/' + relativePath,
+                    path: `${base}/${relativePath}`,
                     isDirectory: true,
                     children: children
                 });
             } else if (item.endsWith('.md')) {
                 result.push({
                     name: item.replace(/\.md$/, ''), // Remove .md extension from the name
-                    path: '/' + relativePath.replace(/\.md$/, ''),
+                    path: `${base}/${relativePath.replace(/\.md$/, '')}`,
                     isDirectory: false
                 });
             }
