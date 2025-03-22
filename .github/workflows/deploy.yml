@@ -33,22 +33,55 @@ jobs:
         uses: actions/configure-pages@v4
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
+        
+      - name: Run TypeScript type checking
+        id: typescript-check
+        run: npx tsc --noEmit
+        
+      - name: Run unit tests
+        id: unit-tests
+        run: npm run test:unit
+        
+      - name: Install Playwright dependencies
+        run: npx playwright install --with-deps
+        
+      - name: Run Playwright tests
+        id: playwright-tests
+        run: npm run test:report
+        continue-on-error: true
+        
+      - name: Check if all tests passed
+        id: test-check
+        run: |
+          if [ ${{ steps.typescript-check.outcome }} == 'success' ] && [ ${{ steps.unit-tests.outcome }} == 'success' ]; then
+            echo "All critical tests passed, proceeding with deployment"
+            echo "proceed=true" >> $GITHUB_OUTPUT
+          else
+            echo "Critical tests failed, aborting deployment"
+            echo "proceed=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+      
       - name: Build
+        if: steps.test-check.outputs.proceed == 'true'
         env:
           NODE_ENV: production
         run: |
           npm run build
           touch build/.nojekyll
+          
       - name: Upload artifact
+        if: steps.test-check.outputs.proceed == 'true'
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./build
 
   deploy:
+    needs: build
+    if: success()
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    needs: build
     runs-on: ubuntu-latest
     name: Deploy
     steps:
