@@ -1,3 +1,4 @@
+import { generateStaticPaths } from "$lib/utils/staticPaths";
 import { error } from '@sveltejs/kit';
 import fs from 'fs';
 import path from 'path';
@@ -32,59 +33,7 @@ marked.setOptions({
 });
 
 // This function generates all possible URL paths for static site generation
-export const entries = () => {
-  console.log('Generating static paths for all content...');
-  const contentDir = path.join(process.cwd(), 'content');
-  
-  if (!fs.existsSync(contentDir)) {
-    console.warn('Content directory does not exist at:', contentDir);
-    return [];
-  }
-  
-  const paths = [];
-  
-  // Add the base content files (like getting-started.md)
-  const baseContentFiles = fs.readdirSync(contentDir)
-    .filter(file => file.endsWith('.md'))
-    .map(file => ({ slug: file.replace('.md', '') }));
-  
-  paths.push(...baseContentFiles);
-  
-  // Process directories like 'genesis'
-  const directories = fs.readdirSync(contentDir, { withFileTypes: true })
-    .filter(dirent => dirent.isDirectory())
-    .map(dirent => dirent.name);
-  
-  for (const dir of directories) {
-    const dirPath = path.join(contentDir, dir);
-    
-    // Get all chapter files (like genesis/1.md)
-    const chapterFiles = fs.readdirSync(dirPath)
-      .filter(file => file.endsWith('.md'))
-      .map(file => {
-        const chapter = file.replace('.md', '');
-        return { 
-          slug: `${dir}/${chapter}` 
-        };
-      });
-    
-    paths.push(...chapterFiles);
-    
-    // Add paths with verse numbers (like genesis/1/1)
-    // Note: This is simplified - ideally we would parse each MD file to find actual verses
-    const chapterWithVerses = chapterFiles.flatMap(({ slug }) => {
-      // Just create entries for first 30 verses of each chapter for simplicity
-      return Array.from({ length: 30 }, (_, i) => ({
-        slug: `${slug}/${i + 1}`
-      }));
-    });
-    
-    paths.push(...chapterWithVerses);
-  }
-  
-  console.log(`Generated ${paths.length} static paths`);
-  return paths;
-};
+export const entries = generateStaticPaths;
 
 export const load = (async ({ params }) => {
     const { slug } = params;

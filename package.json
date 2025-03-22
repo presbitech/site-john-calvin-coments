@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "mkdir -p build && cp -r content build/content &&vite build ",
+		"build": "vite build && rm -rf build/content && cp -r content build/",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -14,8 +14,11 @@
 		"lint": "prettier --check . && eslint .",
 		"deploy": "npm run build && cp -r content build/ && touch build/.nojekyll",
 		"test": "playwright test",
+		"test:headed": "playwright test --headed --reporter=html",
+		"test:report": "playwright test --reporter=list",
 		"test:ui": "playwright test --ui",
-		"test:headed": "playwright test --headed"
+		"test:unit": "vitest run",
+		"test:unit:watch": "vitest"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.51.1",
@@ -36,7 +39,8 @@
 		"svelte": "^5.0.0-next.1",
 		"svelte-check": "^3.4.3",
 		"typescript": "^5.0.0",
-		"vite": "^5.0.0"
+		"vite": "^5.0.0",
+		"vitest": "^3.0.9"
 	},
 	"dependencies": {
 		"marked": "^11.1.1"
