@@ -42,7 +42,15 @@ jobs:
         id: unit-tests
         run: npm run test:unit
         
+      - name: Cache Playwright browsers and dependencies
+        id: cache-playwright
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('package-lock.json') }}
+
       - name: Install Playwright dependencies
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
         
       - name: Run Playwright tests
