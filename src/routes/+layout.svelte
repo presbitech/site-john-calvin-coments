@@ -2,16 +2,17 @@
   import { page } from '$app/stores';
   import '../app.css';
   
-  // Extend Window interface to include tocObserver
-  declare global {
-    interface Window {
-      tocObserver?: IntersectionObserver;
-    }
-  }
-  
   const { data } = $props<{ data: any }>();
   let contentRef = $state<HTMLElement | null>(null);
-  let toc = $state([]);
+  
+  // Define interface for TOC item
+  interface TocItem {
+    id: string;
+    text: string;
+    level: number;
+  }
+  
+  let toc = $state<TocItem[]>([]);
   let expandedFolders = $state<Record<string, boolean>>({});
   // Track current path for TOC updates
   let currentPath = $state($page.url.pathname);
@@ -64,9 +65,9 @@
     if (contentRef) {
       // Use a debounced update to ensure content is fully loaded
       const updateToc = () => {
-        const headings = contentRef.querySelectorAll('h1, h2, h3, h4, h5, h6');
-        if (headings.length > 0) {
-          toc = Array.from(headings).map(heading => ({
+        const headings = contentRef?.querySelectorAll('h1, h2, h3, h4, h5, h6');
+        if (headings && headings.length > 0) {
+          toc = Array.from(headings ?? []).map(heading => ({
             id: heading.id,
             text: heading.textContent || '',
             level: parseInt(heading.tagName[1])

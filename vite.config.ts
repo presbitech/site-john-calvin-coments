@@ -3,11 +3,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
 	plugins: [
-		sveltekit({
-			experimental: {
-				runes: true
-			}
-		})
+		sveltekit()
 	],
 	optimizeDeps: {
 		exclude: ['@sveltejs/kit']
