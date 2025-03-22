@@ -8,7 +8,7 @@
 - When push modifications to repository, Always do in a specific branch (like feature-x) with the name of alteration.
 - Use typescript for the code
 - Use vitest for unit testing
-- When pushing modifications, create a Pull request.
+- When pushing modifications, create a Pull request. the content of the pr should be like markdown so it can be read by github.
 
 # Validation rules
 - Use Linting to validate the code
