@@ -1,4 +1,4 @@
-# Termos e Condições de Uso do Site
+# Termos e Condições
 
 **Última atualização: 2025**
 
@@ -36,4 +36,4 @@ Se você tiver dúvidas ou questões sobre estes Termos e Condições, entre em 
 
 ---
 
-Este arquivo de **Termos e Condições** é uma explicação simples sobre o uso das obras no site e a licença CC BY-ND aplicada ao design do site. Ele deixa claro as permissões e restrições para os usuários do seu conteúdo.
+- Este arquivo de **Termos e Condições** contém algumas explicações simples sobre o uso das obras no site e sobre as licenças, estas não substituem o teor das proprias licenças.
