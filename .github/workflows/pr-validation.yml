@@ -1,0 +1,80 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches: ["main"]
+    types: [opened, synchronize, reopened]
+
+# Allow concurrent PR validations to run
+concurrency:
+  group: "pr-validation-${{ github.event.pull_request.number }}"
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+        
+      - name: Run TypeScript type checking
+        id: typescript-check
+        run: npx tsc --noEmit
+        
+      - name: Run unit tests
+        id: unit-tests
+        run: npm run test:unit
+        
+      - name: Install Playwright dependencies
+        run: npx playwright install --with-deps
+        
+      - name: Run Playwright tests
+        id: playwright-tests
+        run: npm run test:report
+        continue-on-error: true
+        
+      - name: Check if all tests passed
+        id: test-check
+        run: |
+          if [ ${{ steps.typescript-check.outcome }} == 'success' ] && [ ${{ steps.unit-tests.outcome }} == 'success' ]; then
+            echo "All critical tests passed"
+            echo "proceed=true" >> $GITHUB_OUTPUT
+          else
+            echo "Critical tests failed"
+            echo "proceed=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+      
+      - name: Build with base path
+        if: steps.test-check.outputs.proceed == 'true'
+        env:
+          NODE_ENV: production
+        run: |
+          npm run build
+          
+      - name: Report status
+        if: always()
+        run: |
+          if [ ${{ steps.typescript-check.outcome }} == 'success' ] && [ ${{ steps.unit-tests.outcome }} == 'success' ] && [ ${{ steps.test-check.outcome }} == 'success' ]; then
+            echo "✅ All validation steps passed"
+          else
+            echo "❌ Validation failed"
+            echo "TypeScript Check: ${{ steps.typescript-check.outcome }}"
+            echo "Unit Tests: ${{ steps.unit-tests.outcome }}"
+            if [ ${{ steps.playwright-tests.outcome }} != 'success' ]; then
+              echo "⚠️ Playwright Tests: ${{ steps.playwright-tests.outcome }} (non-blocking)"
+            else
+              echo "✅ Playwright Tests: ${{ steps.playwright-tests.outcome }}"
+            fi
+            exit 1
+          fi
