@@ -7,6 +7,7 @@
 - After and succesfull modification, make a Commit to Git explaining what you did on the message.
 - When push modifications to repository, Always do in a specific branch (like feature-x) with the name of alteration.
 - Use typescript for the code
+- Use vitest for unit testing
 - When pushing modifications, create a Pull request.
 
 # Validation rules
