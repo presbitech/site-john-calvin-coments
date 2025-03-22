@@ -49,7 +49,9 @@
         element.scrollIntoView({ behavior: 'smooth' });
       }
       // Update URL hash without full page reload
-      history.pushState(null, '', `#${id}`);
+      // Keep the current path with base path intact, just update the hash
+      const currentPath = window.location.pathname;
+      history.pushState(null, '', `${currentPath}#${id}`);
     }
   }
 
