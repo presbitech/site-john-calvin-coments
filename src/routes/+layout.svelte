@@ -185,7 +185,9 @@
     >
       <span class="material-symbols-outlined">menu</span>
     </button>
-    <h1>Comentários de João Calvino</h1>
+    <a href="/" class="home-link">
+      <h1>Comentários de João Calvino</h1>
+    </a>
   </header>
 
   <div class="main-container">
@@ -308,6 +310,11 @@
     align-items: center;
     justify-content: center;
     position: relative;
+  }
+
+  .header a {
+    text-decoration: none;
+    color: white;
   }
 
   .header h1 {
