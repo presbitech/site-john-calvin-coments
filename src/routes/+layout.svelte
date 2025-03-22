@@ -213,8 +213,9 @@
               <span class="folder-name">{item.name}</span>
             </div>
             {#if expandedFolders[item.path] && item.children && item.children.length > 0}
+            <div class="sub-folder-chapters">
               {#each item.children as childItem}
-                <div class="file-tree" style="padding-left: 1rem">
+                <div class="file-tree">
                   {#if childItem.isDirectory}
                     <div 
                       class="file-item folder-item" 
@@ -250,6 +251,7 @@
                   {/if}
                 </div>
               {/each}
+            </div>
             {/if}
           {:else}
             <a href={item.path} class="file-item file-link">
@@ -378,9 +380,6 @@
     margin: 0 auto;
   }
 
-  .file-tree {
-    margin: 0.25rem 0;
-  }
 
   .file-item {
     margin: 0.25rem 0;

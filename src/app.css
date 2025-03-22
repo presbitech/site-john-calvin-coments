@@ -92,3 +92,43 @@ body {
   height: auto;
   border-radius: 4px;
 }
+
+
+/* RULES OF SUB FOLDER STYLES FOR CHAPTERS */
+.sub-folder-chapters .file-item > .material-symbols-outlined {
+  display: none;
+}
+
+.sub-folder-chapters {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.sub-folder-chapters .file-item {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  padding: 0;
+  margin: 0;
+  border-left: 2px solid transparent;
+  transition: all 0.2s ease;
+  border-radius: 0.5rem;
+  background-color:  rgba(0, 0, 0, 0.03);
+}
+.sub-folder-chapters .file-item span {
+  text-align: center;
+  width: 2rem;
+  height: 2rem;
+}
+.sub-folder-chapters a.file-item.file-link {
+  margin: 0;
+}
+
+.sub-folder-chapters .file-item:hover {
+  color: var(--primary-color);
+  background-color: rgba(0, 0, 0, 0.07);
+}
+  
